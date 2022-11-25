@@ -1,5 +1,5 @@
-import { View, Text, Modal, SafeAreaView, TextInput } from 'react-native'
-import React, { useRef, useState, useEffect, Fragment,memo } from 'react'
+import { View, Text, SafeAreaView, Animated } from 'react-native'
+import React, { useRef, useState, useEffect, memo } from 'react'
 import tw from 'twrnc'
 import Gamekeys from '../component/Gamekeys'
 import { useAppState } from '../context/appStore'
@@ -8,20 +8,23 @@ import QuizHeader from '../component/QuizHeader'
 import { StatusBar } from 'expo-status-bar'
 import { useGameContext } from '../context/quizContext'
 import Emoji from '../component/Emoji'
+import GameOverBoard from '../component/GameOverBoard'
 
 
 
 function Game() {
-    const { isGameStarted, setIsGameStarted, isDark } = useAppState();
 
-    // const engineRef = useRef().current
-    const { lives, score, setScore, answerText, checkAnswer,timer, setTimer } = useGameContext(3)
+    const { isGameStarted, isDark } = useAppState();
+
+
+    const screenAnimatedScaleVale = useRef(new Animated.Value(0)).current;
+
+    const { lives, score, checkAnswer, timer, setTimer, gameOver} = useGameContext()
     const [timerId, setTimerId] = useState(null)
 
     useEffect(() => {
         setTimer(100)
     }, [score])
-
 
     useEffect(() => {
         if (timer == 0 || timer < 0) {
@@ -31,8 +34,6 @@ function Game() {
         }
     }, [timer])
 
-
-
     useEffect(() => {
 
         let timerInterval = null;
@@ -40,7 +41,7 @@ function Game() {
         if (isGameStarted) {
             timerInterval = setInterval(() => {
                 setTimer(prev => prev - 10)
-            }, (1000 * 5/10))
+            }, (1000 * 5 / 10))
             setTimerId(timerInterval)
         } else {
             clearInterval(timerId)
@@ -48,10 +49,22 @@ function Game() {
 
     }, [isGameStarted])
 
-    return (<Fragment>
+    useEffect(() => {
+        Animated.timing(screenAnimatedScaleVale, {
+            toValue: 1,
+            delay: 10,
+            duration: 200,
+            useNativeDriver: true
+        }).start()
+    }, [])
+
+
+    return (<View style={tw`${isDark ? 'bg-white' : 'bg-black'} flex-1`}>
 
         <StatusBar hidden />
-        <View style={tw`flex-1`}>
+        <Animated.View style={[tw`flex-1`, {
+            transform: [{ scale: screenAnimatedScaleVale }]
+        }]}>
             <View style={tw`h-2/4 ${isDark ? "bg-white" : "bg-black"}`}>
                 <SafeAreaView>
                     <View style={tw`flex-row justify-between px-7`}>
@@ -72,14 +85,14 @@ function Game() {
                     </View>
                 </SafeAreaView>
                 <QuizHeader />
-                <Emoji />
-                {/* <GameRender/> */}
-                {/* <GameScreen ref={engineRef} started={isGameStarted} start={() => setIsGameStarted(true)} setScore={setScore} /> */}
+                {!gameOver ? <Emoji /> :
+                    <GameOverBoard />}
             </View>
             <Gamekeys />
 
-        </View>
-    </Fragment>
+        </Animated.View>
+
+    </View>
     )
 }
 

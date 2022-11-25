@@ -7,17 +7,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { useGameContext } from '../context/quizContext'
 import SpecialKey from './SpecialKeyPad'
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native'
 
 export default function Gamekeys() {
 
-    const { setOpengame, setIsGameStarted, isGameStarted, isDark } = useAppState()
-    const { questions, genQuiz, answer, setAnswer } = useGameContext()
-
+    const {  setIsGameStarted, isGameStarted, isDark } = useAppState()
+    const { setGameOver } = useGameContext()
+    const navigation = useNavigation();
     return (
         <View style={tw`flex-1 bg-white border-t ${isDark ? 'border-gray-100' : 'border-gray-700'}`}>
             <View style={tw`flex-row items-center justify-center py-5 ${isDark ? 'bg-white' : 'bg-black'}`}>
                 <TouchableOpacity
-                    onPress={() => { setIsGameStarted(false); setOpengame(false) }}
+                    onPress={() => { setIsGameStarted(false);setGameOver(false); navigation.goBack(); /* setOpengame(false)*/ }}
                     style={tw`flex-1 border-r border-gray-200`}>
                     <Text style={tw`text-center text-red-600 font-bold`}>Quit</Text>
                 </TouchableOpacity>
@@ -38,12 +39,7 @@ export default function Gamekeys() {
                     <GameKeyPad data={{ text: '4', value: '4' }} />
                     <GameKeyPad data={{ text: '5', value: '5' }} />
                     <GameKeyPad data={{ text: '6', value: '6' }} />
-                    <SpecialKey data={
-                        {
-                            text: '',
-                            component: () => <MaterialIcons name="leaderboard" size={24} color={isDark ? "black":"white"} />
-                        }
-                    } />
+                    <GameKeyPad data={{ text: '', value: '' }} />
                 </View>
                 <View style={tw`flex-1 flex-row mb-2 justify-between`}>
                     <GameKeyPad data={{ text: '1', value: '1' }} />

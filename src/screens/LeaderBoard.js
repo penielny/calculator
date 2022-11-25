@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, SafeAreaView ,Image} from 'react-native'
 import React from 'react'
 import tw from 'twrnc'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const UserOne = "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80";
 const UserTwo = "https://images.unsplash.com/photo-1624574337423-7ea725c5540c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2069&q=80";
@@ -10,6 +11,7 @@ const UserThree = "https://images.unsplash.com/photo-1624561172888-ac93c696e10c?
 
 
 export default function LeaderBoard() {
+    const navigation = useNavigation();
     return (
         <View style={tw`flex-1 bg-green-500`}>
             <View style={tw`flex-1 bg-black absolute top-0 left-0 w-full h-full bg-opacity-80`} />
@@ -17,7 +19,7 @@ export default function LeaderBoard() {
                 <View style={tw``}>
                     <SafeAreaView>
                         <View style={tw`flex-row items-center justify-between p-3 px-7`}>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() =>navigation.goBack()}>
                                 <MaterialCommunityIcons name="chevron-left" size={30} style={tw`text-green-100`} />
                             </TouchableOpacity>
                             <Text style={tw`text-xl text-green-100`}>LeaderBoard</Text>

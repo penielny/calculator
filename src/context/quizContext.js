@@ -1,6 +1,8 @@
 import { useState, useEffect, createContext, useContext } from 'react'
 import { useAppState } from './appStore';
 import { Audio } from 'expo-av';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const GameContext = createContext();
 
@@ -19,10 +21,31 @@ export function GameContextProvider({ children }) {
     const [emojiState, setEmojiState] = useState(0)
     const [timer, setTimer] = useState(100)
     const [lives, setLives] = useState(3)
+    const [gameOver, setGameOver] = useState(false);
+    const [highScoreLable, setHighScoreLable] = useState(0)
+    const [lastscore, setLastscore] = useState(0)
 
 
+    async function getHighScore() {
+        try {
+            const highscore_ = await AsyncStorage.getItem('@highscore')
+            if (highscore_ != null) {
+                return highscore_
+            }
+            return 0;
+        } catch (error) {
+            return 0;
+        }
+    }
 
-
+    async function setHighScore(value) {
+        try {
+            await AsyncStorage.setItem('@highscore', value)
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
 
     // play sound
     async function playSound() {
@@ -32,8 +55,6 @@ export function GameContextProvider({ children }) {
     // stop sound
 
     function stopSound() { }
-
-
 
     function checkAnswer() {
 
@@ -60,6 +81,8 @@ export function GameContextProvider({ children }) {
             isCorrect = true;
         }
         if (lives == 0) {
+            // check if score grater than high score
+            setLastscore(score)
             setScore(0)
         }
         setTimer(100)
@@ -67,8 +90,6 @@ export function GameContextProvider({ children }) {
         setAnswerText("")
         return isCorrect;
     }
-
-
 
     useEffect(() => {
         setTimeout(() => {
@@ -95,7 +116,17 @@ export function GameContextProvider({ children }) {
     // checking if gameshould stop based on life
     useEffect(() => {
         if (lives == 0) {
+            setLastscore(score)
             // stop game
+            getHighScore().then(score_ => {
+                if(score_ < score){
+                    setHighScore(score.toString());
+                }else{
+                    setHighScoreLable(score_)
+                }
+            })
+            setGameOver(true);
+            setScore(0)
             setIsGameStarted(false)
         }
     }, [lives])
@@ -111,11 +142,14 @@ export function GameContextProvider({ children }) {
     useEffect(() => {
         let qs = []
         for (let i = 0; i < 10; i++) {
-            qs.push([`${Math.floor(Math.random() * 9)}`, opprends[Math.floor(Math.random() * 4)], `${Math.floor(Math.random() * 9)}`])
+            qs.push([`${Math.floor(Math.random() * 9)}`, opprends[Math.floor(Math.random() * 3)], `${Math.floor(Math.random() * 9)}`])
         }
         setQuestions(qs);
         setCurrentQuestionPosition(0)
         setLives(3)
+        if (isGameStarted) {
+            setGameOver(false)
+        }
     }, [isGameStarted])
 
     useEffect(() => {
@@ -144,5 +178,6 @@ export function GameContextProvider({ children }) {
 
     }, [answer])
 
-    return <GameContext.Provider value={{ questions, genQuiz, answerText, answer, timer, setTimer, setAnswer, currentQuestionPosition, lives, score, setScore, emojiState, checkAnswer }}>{children}</GameContext.Provider>
+
+    return <GameContext.Provider value={{lastscore, gameOver, setGameOver,highScoreLable ,questions, genQuiz, answerText, answer, timer, setTimer, setAnswer, currentQuestionPosition, lives, score, setScore, emojiState, checkAnswer }}>{children}</GameContext.Provider>
 }

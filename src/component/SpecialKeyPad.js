@@ -9,7 +9,7 @@ export default function SpecialKey({ data }) {
     const navigation = useNavigation();
     return (
         <Pressable
-            onPress={() => { setOpengame(false); navigation.navigate("LeaderBoard"); }}
+            onPress={() => {null /*setOpengame(false); navigation.navigate("LeaderBoard"); */}}
             style={tw`bg-gray-100 bg-gray-100 flex-1 mx-1 rounded-xl items-center justify-center ${isDark ? '' : 'bg-gray-300 bg-opacity-20'}`}>
             {data.component}
         </Pressable>

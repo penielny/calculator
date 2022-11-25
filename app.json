@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "quest-pal",
-    "slug": "quest-pal",
+    "name": "calculator",
+    "slug": "calculator",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,6 +28,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "A simple calculator with embedded math Game. Have you ever wanted more with your calculator ?. try it our.",
+    "githubUrl": "https://github.com/penielny/calculator"
   }
 }
